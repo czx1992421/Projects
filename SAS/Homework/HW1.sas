@@ -6,7 +6,7 @@
 /************************************************************************************
  *                                        Problem 1                                 *
  ************************************************************************************/ 
-*Create a permanent SAS data set called Bobsled2014* 
+/*Create a permanent SAS data set called Bobsled2014*/ 
 data Bobsled2014;
 input Lastname $9. Firstname $8. Status $1. +1 Time1 Time2 Time3 Time4 Date MMDDYY10.;
 datalines;
