@@ -6,6 +6,7 @@
 /************************************************************************************
  *                                        Problem 1                                 *
  ************************************************************************************/
+/*Create a new variable called log_FEV* and compare the normality of the data for the two variables*/
 data FEV;
 infile 'C:\Users\Jovial\Desktop\FEV.csv' dsd;
 input Id Age FEV Hgt Sex Smoke;
@@ -43,13 +44,16 @@ var FEV;
 histogram FEV;
 inset n normal(ksdpval) / pos = ne;
 run;
+/*Compute several statistics for variables 'Age' and 'log_FEV' for each category of 'Sex'*/
 proc means data=FEV_new mean std median qrange min max;
 class Sex;                         
 var Age log_FEV;
 run;
+/*Create a two-way frequency table 'Sex' by 'Smoke'*/
 proc freq data=FEV_new;
 tables Sex*Smoke / norow nocol nocum;
 run;
+/*Create a table according to requirement and generate the output via ODS HTML*/
 data FEV_new0;
 set FEV_new;
 if Age ge 3 and Age le 4 then Age0='Preschool Aged';
@@ -76,7 +80,7 @@ ods html close;
 /************************************************************************************
  *                                        Problem 2                                 *
  ************************************************************************************/
-
+/*Read the data*/
 data Temp;
 input City $10. temp1-temp6 3.;
 cards;
@@ -88,6 +92,7 @@ Melbourne 71 84 82 75 82 74
 run;
 proc print data=Temp;
 run;
+/*Create other six variables using an array*/
 data Temp_new;
 set Temp;
 array temp{6} temp1-temp6;
@@ -99,6 +104,7 @@ drop i;
 run;
 proc print data=Temp_new;
 run;
+/*Compute the averages of the Fahrenheit and Celsius temperatures and generate the following Windows report output*/
 proc report data=Temp_new windows headline ls=80;
 column City temp1-temp6 tempave Celsius_temp1-Celsius_temp6 Ctempave;
 define City / descending order group;
@@ -115,6 +121,7 @@ define Celsius_temp1-Celsius_temp6 / display noprint;
 break after City / dol;
 title 'September temperature report';
 run;
+/*Create a macro called STATS*/
 %macro STATS(dataset,vargroup1,vargroup2);
   proc means data=&dataset n mean stddev min max maxdec=1;
   var &vargroup1 &vargroup2;
