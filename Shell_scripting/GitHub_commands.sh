@@ -1,6 +1,6 @@
 #This is a document including all the basic shell scripting in GitHub
 
-cd ~/Desktop/GitHub/Projects #Change the dictionary
+cd ~/Desktop/GitHub/Projects #Change the directory
 
 git clone https://github.com/czx1992421/newGitTest.git #Connect to GitHub
 
