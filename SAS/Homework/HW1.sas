@@ -6,6 +6,7 @@
 /************************************************************************************
  *                                        Problem 1                                 *
  ************************************************************************************/ 
+*Create a permanent SAS data set called Bobsled2014 
 data Bobsled2014;
 input Lastname $9. Firstname $8. Status $1. +1 Time1 Time2 Time3 Time4 Date MMDDYY10.;
 datalines;
@@ -25,22 +26,26 @@ libname Jovial'C:\Users\Jovial\Desktop\Jovial';
 data Jovial.Bobsled2014;
 set Bobsled2014;
 run;
+*Create a format for 'Status'
 proc format;
 value $Status 'A'='Amateur'
               'P'='Professional';
 run;
+*Sort the data by 'Status' and 'Last Name'
 proc sort data=Bobsled2014;
 by Status;
 run;
 proc sort data=Bobsled2014;
 by Lastname;
 run;
+*Create a new variable called 'Ave_run'
 data Bobsled2014_1;
 set Bobsled2014;
 if Status eq 'A' then Avg_run=(Time2+Time3+Time4)/3 ;
 else if Status eq 'P' then Avg_run=(Time1+Time2+Time3+Time4)/4;
 Avg_run=round(Avg_run,0.01);
 run;
+*Print the dataset
 data Bobsled2014_2;
 set Bobsled2014_1 (KEEP = Lastname Firstname Status Avg_run);
 run;
@@ -55,6 +60,7 @@ run;
 /************************************************************************************
  *                                        Problem 2                                 *
  ************************************************************************************/
+*Input two data sets and merge them 
 data BP_Values;
 infile 'C:\Users\Jovial\Desktop\BP_Values.csv' dsd;
 input Id Sys1 Dias1 Sys2 Dias2 Sys3 Dias3;
@@ -67,8 +73,10 @@ data combine;
 merge BP_Values Bp_Trt;
 by Id;
 run;
+*Check the contents 
 proc contents data=combine;
 run;
+*Create 'AVG_SYS' and 'AVG_DIA' variables
 data combine_1;
 set combine;
 AVG_SYS=(Sys1+Sys2+Sys3)/3;
@@ -76,11 +84,13 @@ AVG_DIA=(Dias1+Dias2+Dias3)/3;
 AVG_SYS=round(AVG_SYS,0.01);
 AVG_DIA=round(AVG_DIA,0.01);
 run;
+*Create 'AVG_BP' variable
 data combine_2;
 set combine_1;
 AVG_BP=AVG_DIA+(AVG_SYS-AVG_DIA)/3;
 AVG_BP=round(AVG_BP,0.01);
 run;
+*Create a subset containing only the patients that have an average blood pressure greater than or equal to 85
 data combine_3;
 set combine_2;
 if AVG_BP<85 then delete;
