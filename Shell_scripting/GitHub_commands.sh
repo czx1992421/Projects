@@ -6,7 +6,9 @@ git clone https://github.com/czx1992421/newGitTest.git #Connect to GitHub
 
 git status #Show difference between us and GitHub
 
-git add python\ sample.py #Commit change of new file
+git add python\ sample.py
+
+git rm Projects #Commit change of new file
 
 git commit -m 'added python\ sample.py' #Give message
 
