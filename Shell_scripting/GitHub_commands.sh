@@ -2,7 +2,7 @@
 
 cd ~/Desktop/GitHub/Projects #Change the directory
 
-git clone https://github.com/czx1992421/newGitTest.git #Connect to GitHub
+git clone https://github.com/czx1992421/Projects.git #Connect to GitHub
 
 git status #Show difference between us and GitHub
 
