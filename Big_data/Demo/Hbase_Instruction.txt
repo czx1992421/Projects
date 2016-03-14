@@ -1,0 +1,55 @@
+This doc contains HBase configuration instructions, the HBase version for this doc is 0.98.6.1, which is compatible with Hadoop 2.4.X and 2.5.X 
+Modified at 17:51 Oct 2nd, 2014
+ 
+
+1. Download and extract HBase from: http://www.eng.lsu.edu/mirrors/apache/hbase/ , save it to a proper location. For Mac, installation is also available via brew.
+
+2. Set JAVA_HOME properly, e.g. export JAVA_HOME=$(/usr/libexec/java_home) //	Optional
+
+3. Remove slf4j-log4j12-X.X.X.jar in ${HBASE_HOME}/lib/  //Optional, this eliminate a 	warning when running HBase
+
+4. Under your HBase directory, do: $bin/start-hbase.sh to start HBase
+
+5. $bin/hbase shell   now you can do your work with HBase. A list of HBase command can be found here:http://wiki.apache.org/hadoop/Hbase/Shell ; 
+
+6. Next, to run it within Hadoop dfs, first /bin/stop-hbase.sh
+
+7. Go to libexec/conf, modify hbase-site.xml:
+Add:
+<property>
+  <name>hbase.cluster.distributed</name>
+  <value>true</value>
+</property>
+<property>
+  <name>hbase.master.wait.on.regionservers.mintostart</name>
+  <value>1</value>
+</property>
+<property>
+  <name>hbase.rootdir</name>
+  <value>hdfs://localhost:9000/hbase</value>
+</property>
+note that: port number should be the same as hadoop in core-site.xml
+
+8. Run hadoop and yarn first, then run hbase. Use $jps to check if everything we need is running, you may see a list of JAVA threads like this:
+	18166 HMaster
+	18116 HQuorumPeer
+	17600 DataNode
+	18269 HRegionServer
+	17825 ResourceManager
+	17916 NodeManager
+	17713 SecondaryNameNode
+	17511 NameNode
+	18303 Jps
+If you see something missing, you may try stop Hadoop and Hbase, clean Cache in /tmp/hadoop-x and restart. Note: always try to stop Hadoop by stop-dfs.sh or stop-all.sh in order to avoid crash.
+
+
+9. check HBase directory: &hadoop fs -ls /hbase
+If you see a few files there, then your Hbase is good to go. Also visit HBase web console: http://localhost:60010/
+
+10. $/bin/hbase shell 
+	In the shell mode, we can use our hbase to create a table:
+	 (use your own example )
+	Exit by: quit
+
+
+Shuguan Yang

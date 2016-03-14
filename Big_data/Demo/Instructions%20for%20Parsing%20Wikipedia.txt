@@ -1,0 +1,50 @@
+This example was done on Ubuntu 14.04 LTS
+
+1. Download Wikipedia Dataset
+
+2. Extract the xml file from the dataset. Now you have all articles in one xml file.
+
+3. We will write our own Python code to cut the entire xml file into article-wise files. Also extract the titles
+   Before that, we need some additional Python package. Install it by:
+
+	$ pip install -upgrade pip
+	$ pip install lxml
+
+4. Create a pyhton source code file, lets say wikipedia-extractor.py. Type in the following codes
+
+# Codes starts here
+import lxml.etree
+import os
+
+tree = lxml.etree.parse('wikipedia')
+namespaces = {'ns':'http://www.mediawiki.org/xml/export-0.10/'}
+
+i = 0
+el_list = tree.xpath('//ns:page', namespaces = namespaces)
+
+for el in el_list:
+        title = el.xpath('.//ns:title', namespaces = namespaces)[0].text
+        print title
+        f = file('parse/' + str(i), 'w')
+        text = el.xpath('.//ns:revision/ns:text', namespaces = namespaces)[0].text
+        f.write(title.encode('utf-8') + '\n')
+        f.write(text.encode('utf-8'))
+        i = i + 1
+        f.close()
+# Codes ends here
+
+   You need to replace the 'wikipedia' with the path of your wikipedia xml file.
+   Also, for the parameter 'http://www.mediawiki.org/xml/export-0.10/', you need to double check it in your own xml file. Sometimes, you will have version like 0.8 instead of 0.10. Just open the xml file and you will find it.
+
+5. Before running the code, create a directory 'parse' under where you excute the code.
+   Then run it by:
+
+	$ python wikipedia-extractor.py
+
+   Check whats inside the parse directory.
+
+6. This is not done yet. You still have a lot meaningless chars in the articles. But you can combine this method with other extractors
+
+Good luck!
+Yongchen
+11/05/2015

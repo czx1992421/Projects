@@ -1,0 +1,14 @@
+installation of Hive
+
+Mac: brew install Hive
+
+Linux: 
+cd ~/Downloads
+wget http://mirror.cc.columbia.edu/pub/software/apache/hive/hive-0.13.1/apache-hive-0.13.1-bin.tar.gz
+cp apache-hive-0.13.1-bin.tar.gz ~
+cd ~
+tar zxvf apache-hive-0.13.1-bin.tar.gz
+mv apache-hive-0.13.1-bin hive
+cd hive
+cd bin
+./hive

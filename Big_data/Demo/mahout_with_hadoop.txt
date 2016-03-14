@@ -1,0 +1,88 @@
+Following has instructions for setting path variables to make 
+Mahout work with hadoop:
+————————————————————————————————————————————————————————————————
+
+How to setup git and maven:
+
+MacOS: 
+brew install git
+brew install maven
+
+Linux (Ubuntu): 
+sudo apt-get install git
+sudo apt-get install maven
+
+
+To run Mahout with Hadoop, run the following command on the terminal: 
+
+1) unset MAHOUT_LOCAL
+
+#Location of your hadoop conf directory. The directory where you 
+# updated core-site.xml and hdfs-site.xml
+————————————————————————————————————————————————————————————————
+
+2) export HADOOP_CONF_DIR=/<path of hadoop conf directory>
+
+#Example: MacOS: if you installed hadoop 2.5.1 using homebrew  then
+
+export HADOOP_CONF_DIR=/usr/local/Cellar/hadoop/2.5.1/libexec/etc/hadoop/
+
+#Example: any OS: if you installed hadoop 2.5.1 by downloading the distribution from apache then:
+
+export HADOOP_CONF_DIR=/usr/local/Cellar/hadoop/2.5.1/libexec/etc/hadoop/
+
+————————————————————————————————————————————————————————————————
+
+3) export MAHOUT_CONF_DIR=<location of mahout conf directory>
+
+Go to the location where you have installed mahout. It has a conf directory inside. 
+
+For eg.: If you’ve got mahout code at /Users/bhavdeepsethi/CU/BigDataAnalytics/mahout-trunk
+
+then command with location of conf directory is: 
+
+export MAHOUT_CONF_DIR=/Users/bhavdeepsethi/CU/BigDataAnalytics/mahout-trunk/conf
+
+When you’re running mahout with hadoop, you have to put the property (config) file inside the $MAHOUT_CONF_DIR folder. 
+
+If you want some sample configs, download mahout from:
+http://download.nextag.com/apache/mahout/0.9/mahout-distribution-0.9.tar.gz 
+
+Extract it, go to the conf directory inside it. There are around 31 property (config) files there.  
+
+You can copy these property files to location of your $MAHOUT_CONF_DIR or set $MAHOUT_CONF_DIR as the conf directory of this distribution. 
+
+————————————————————————————————————————————————————————————————
+
+To run it with hadoop 2.x: 
+
+1) git clone git://git.apache.org/mahout.git mahout-trunk 
+
+
+2) cd mahout-trunk
+
+
+3) mvn clean package -Dhadoop2.version={your hadoop version} -Dhbase.version={your base version} -DskipTests
+
+eg.: For hadoop 2.5.1 and hbase 0.98.6.1-hadoop2, we run: 
+
+mvn clean package -Dhadoop2.version=2.5.1 -Dhbase.version=0.98.6.1-hadoop2 -DskipTests
+
+4) Run command “unset MAHOUT_LOCAL”. 
+
+5) Now you can run the same command as used for local mahout. Just replace the input/output path to location on hdfs
+
+eg.:
+
+bin/mahout recommenditembased -s SIMILARITY_LOGLIKELIHOOD -i mahout/example1.csv -o mahout/output4 --numRecommendations 1
+
+The above command will expect a input file example1.csv in /user/<your username>/mahout folder on hdfs. The output will be created as /user/<your username>/mahout/output4 folder.
+
+————————————————————————————————————————————————————————————————
+
+For more help on running kmeans and fuzzy kmeans clustering, look at the following links: 
+https://mahout.apache.org/users/clustering/k-means-commandline.html
+
+https://mahout.apache.org/users/clustering/fuzzy-k-means-commandline.html
+
+

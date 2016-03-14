@@ -1,0 +1,180 @@
+This tutorial aims for Ubuntu LTS 14.04. For Mac user, you can search for corresponding command lines.
+
+SystemG website:
+http://systemg.research.ibm.com/setup.html
+
+0. Overview
+Before you try everything for SystemG Lite, you first need to get SystemG gShell working properly.
+Configuration for SystemG lite relies mainly on two parts of SystemG. First you should configure the REST API correctly. After you make sure it works, you can move on the second part of configurating Lite.
+
+1. REST API
+
+1.1 First of all, you need an Apache Server on you machine. Check it by seeing whether you have the following directory.
+
+$ls /var/www/html
+
+If you dont have one, install Apache2 by:
+
+$sudo apt-get install apache2
+
+1.2 Apache Server is just the base. You need additional packages and tools to support REST. Install the following if you dont have one.
+
+1.2.1 Install PHP
+
+$sudo apt-get install php5
+
+1.2.2 Install LWP::Simple (Check website: http://stackoverflow.com/questions/10524840/cant-locate-lwp-simple-pm-in-inc)
+
+$perl -MCPAN -e'install "LWP::Simple"'
+
+1.2.3 Install JSON.pm, the JSON module for Perl (Check website: https://github.com/revinate/elasticsearch-munin-plugins/issues/1)
+
+$sudo apt-get install libjson-perl
+
+1.2.4 Enable CGI module for Apache (Check website: http://askubuntu.com/questions/54251/how-do-i-make-apache-run-a-cgi-instead-of-showing-the-text/54259#54259)
+
+$sudo a2enmod cgi
+$sudo service apache2 restart
+
+1.2.5 Change the CGI directory that Apache2 points to. This is an optional step, but I recommend you do so to make yourself easier to manage all the parts following.
+
+Go to diretory "/etc/apache2/conf-availale/"
+Open file "serve-cgi-bin.conf" with root authority
+
+$sudo gvim serve-cgi-bin.conf
+
+Change the line
+ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+with
+ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/
+
+And again change the line
+<Directory "/usr/lib/cgi-bin">
+with
+<Directory "/var/www/html/cgi-bin">
+
+Save the changes. Then restart the Apache2 service:
+
+$sudo service apache2 restart
+
+OK, until now, you have done a good job on supporting REST API. :D
+
+1.3 Configure REST API
+
+Lets follow the steps of REST API on SystemG website.
+
+1.3.1 Get into the your directory contains SystemG. Lets say mine is (yours may be different):
+
+$cd ~/systemG/systemg-tools-1.3.0_linux-64bit
+
+1.3.2 Create REST API contents directory under Apache contents directory (If you dont have one)
+
+$sudo mkdir /var/www/html/cgi-bin
+$sudo mkdir /var/www/html/cgi-bin/restapi
+
+1.3.3 Copy the following files into the Apache2 server contents directory.
+
+$sudo cp -r restapi/gshell restapi/gShellClientMulti restapi/invoke_with_load_library lib/ /var/www/html/cgi-bin/restapi
+
+1.3.4 Change the permissions of all files you copied there
+
+$sudo chmod -R 755 /var/www/html/cgi-bin
+
+1.3.5 Set the environment variable of the path to lib files in SystemG directory (optional, I am not quite sure of functions of this variable, the SystemG website suggest to do so. And change the path name with yours)
+
+$export LD_LIBRARY_PATH=/home/yongchen/systemG/systemg-tools-1.3.0_linux-64bit
+
+Or you write this command line into ~/.bashrc file to excute it everytime automatically when a shell opens.
+
+Cool, I think you finished all configurations for REST API now. Lets use it.
+
+1.4 Use REST API
+
+1.4.1 Run sysGSuperMgr to start REST API. This is under your SystemG directory
+
+$nohup gshell/sysGSuperMgr 6688 10 > sysg.out 2> sysg.err < /dev/null &
+
+Then type enter, if you see nothing, it means working properly. If you see numbers like 255 or 127, it means you got something wrong. For 255, its usually because you cant bind the socket. Just wait for a while, take a cup of tea, and then back to try again. For 127, its because you dont have the sysGSuperMgr. Check whether you are under the right directory.
+
+Cool, you started REST API now, lets check it.
+
+1.4.2 Test REST API
+
+Lets open a browser. First go to
+
+127.0.0.1
+
+If you see things about Apache, congratulations on successful installation of Aapch2 :D
+Then go to
+
+127.0.0.1/cgi-bin/restapi/gshell
+
+If you see things like
+"{"error":[{"MESSAGE":"invalid request"}]}"
+Congratualtion, You are almost there!
+
+If you see things like a long script, it means you have a wrong configuration for REST above. Check all steps you have done for REST configuration. If you still got the problem, report this under the post. If all of you have such problem, it may be mistakes of this instruction.
+
+Then go to
+
+127.0.0.1/cgi-bin/restapi/gshell/graphs
+
+You should see nothing if you have never create a graph under username 'default'
+Once you got everything correct above, lets move to Lite! Yeeeeeeeeeeeeeeeeeeeeah!
+
+
+2. SystemG Lite
+
+Lets follow the steps on SystemG website again:
+
+2.1 Go to your SystemG directory
+
+2.2 Copy the following files to Apache2 contents directory
+
+$sudo cp -r systemg-lite/ /var/www/html/
+
+2.3 Go to /var/www/html/systemg-lite
+
+$cd /var/www/html/systemg-lite
+
+2.4 Configure it. Open the php/config.php
+
+$sudo gvim php/config.php
+
+Change the URL in the line "define("GRAPHDB_URL",...)" with
+
+"http://127.0.0.1/cgi-bin/restapi/gshell/"
+
+Save it.
+Remember there is a slash at the end of the URL
+
+2.5 Change the permission of systemg-lite files
+
+$cd ..
+$sudo chmod -R 755 systemg-lite
+
+2.6 Change the permission of tmp and upload directory
+
+$cd systemg-lite/
+$sudo chmod -R 777 tmp/
+$sudo chmod -R 777 upload/files/
+
+Excellent, you finished all configurations! Award yourself with some cookies.
+
+2.7 Run SystemG Lite
+
+Lets open our Browser friend again.
+Go to the website:
+
+127.0.0.1/systemg-lite99
+
+you should be able to see the System G Lite there.
+Then try to create a dataset by create new. Then following the easy instruction on the website. You should be able to create the graph!
+
+Few things to let you know, if you click the triangle of dataset selection and finds a long script there, it is because forget to install php. Do it. If you cant create the graph, first make sure you have good REST API service.
+
+Good luck! And if you find anything wrong, like typo, silly typing, report to me. I will fix it ASAP. Thanks!
+
+Exhausted Yongchen
+Nov 16th, 2015
+

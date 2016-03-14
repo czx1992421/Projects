@@ -1,0 +1,71 @@
+#call the mongoDB listener
+sudo /usr/local/Cellar/mongodb/3.0.7/bin/mongod
+
+#import dataset into MongoDB
+mongoimport --db local --collection tweetsSB --drop --file /Users/Jovial/Desktop/BigData/tweetsSB.json 
+
+#output one sample
+db.tweetsSB.findOne()
+
+#calculate data size
+db.tweetsSB.dataSize()
+
+#remove a field from documents
+db.tweetsSB.update({},{$unset:{entities:'',contributors:'',truncated:'',is_quote_status:'',in_reply_to_status_id:'',in_reply_to_user_id:'',id:'',favorite_count:'',retweeted:'',source:'',in_reply_to_screen_name:'',retweet_count:'',metadata:'',favorited:'',in_reply_to_user_id_str:'',possibly_sensitive:'',lang:'',in_reply_to_status_id_str:'',retweeted_status:'',coordinates:''}},{multi:true})
+
+#remove a field from array
+db.tweetsSB.find().forEach(function(doc) {
+var userinfo = doc.user;
+delete (userinfo["entities"]); 
+delete (userinfo["follow_request_sent"]); 
+delete (userinfo["has_extended_profile"]); 
+delete (userinfo["profile_use_background_image"]); 
+delete (userinfo["id"]); delete (userinfo["verified"]); 
+delete (userinfo["profile_text_color"]); 
+delete (userinfo["profile_image_url_https"]); 
+delete (userinfo["profile_sidebar_fill_color"]); 
+delete (userinfo["followers_count"]); 
+delete (userinfo["protected"]); 
+delete (userinfo["default_profile_image"]); 
+delete (userinfo["lang"]); 
+delete (userinfo["utc_offset"]); 
+delete (userinfo["statuses_count"]); 
+delete (userinfo["description"]); 
+delete (userinfo["friends_count"]); 
+delete (userinfo["profile_background_image_url_https"]); 
+delete (userinfo["profile_link_color"]); 
+delete (userinfo["profile_image_url"]); 
+delete (userinfo["following"]); 
+delete (userinfo["geo_enabled"]); 
+delete (userinfo["profile_background_color"]); 
+delete (userinfo["profile_banner_url"]); 
+delete (userinfo["profile_background_image_url"]); 
+delete (userinfo["is_translation_enabled"]); 
+delete (userinfo["profile_background_tile"]); 
+delete (userinfo["favourites_count"]); 
+delete (userinfo["notifications"]); 
+delete (userinfo["url"]); 
+delete (userinfo["created_at"]);
+delete (userinfo["contributors_enabled"]);
+delete (userinfo["profile_sidebar_border_color"]);
+delete (userinfo["default_profile"]);
+delete (userinfo["is_translator"]);
+delete (userinfo["listed_count"]); 
+db.tweetsSB.save(doc);
+})
+
+#export dataset into local
+mongoexport --db local --collection tweetsSB --out /Users/Jovial/Desktop/BigData/tweetsSB_clean.json 
+
+#count the tweets between a certain time range
+db.tweetsSB.find({created_at:{$gt:"Sun Nov 29 10:43:04 +0000 2015",$lt:"Sun Nov 29 11:59:59 +0000 2015"}}).count()
+
+#find the last document according to _id
+db.tweetsSB.find().sort({_id:-1}).limit(1)
+
+#remove document
+db.tweetsSB.remove({'user.location':''})
+db.tweetsSB.remove({'user.location':/USA/})
+db.tweetsSB.remove({created_at:{$gte:"Thu Dec 03 12:44:00 +0000 2015",$lte:"Thu Dec 03 23:59:59 +0000 2015"}})
+db.tweetsSB.remove({created_at:{$gte:"Fri Dec 04 00:00:00 +0000 2015",$lte:"Fri Dec 04 23:59:59 +0000 2015"}})
+db.tweetsSB.remove({created_at:{$gte:"Sat Dec 05 00:00:00 +0000 2015",$lte:"Sat Dec 05 23:59:59 +0000 2015"}})

@@ -1,0 +1,63 @@
+These are example command lines for clustering Reuters dataset. Please follow Mahout website for more info.
+
+0. Create a directory for accommodating Reuters dataset under Mahout directory
+
+$mkdir reuters
+
+And then copy the unzipped Reuter dataset to that directory, named as reuters/reuters21578
+
+
+1. Extract Reuter articles from .sgm to .txt files
+
+$bin/mahout org.apache.lucene.benchmark.utils.ExtractReuters reuters/reuters21578/ reuters/reuters-out/
+
+Notice that reuters/reuters21578/ is the directory containing .sgm files
+And reuters/reuters-out/ is the output directory containing extracted .txt files
+
+
+2. Convert raw data into Hadoop Sequence file
+
+$bin/mahout seqdirectory -i reuters/reuters-out -o reuters/reuters-out-seqdir -c UTF-8 -chunk 5
+
+
+3. Generate vectors from Sequence file
+
+$bin/mahout seq2sparse -i reuters/reuters-out-seqdir/ -o reuters/reuters-out-seqdir-sparse-kmeans
+
+
+4. Cluster with KMeans
+
+$bin/mahout kmeans -i reuters/reuters-out-seqdir-sparse-kmeans/tfidf-vectors/ -c reuters/kmeans-clusters -o reuters/reuters-kmeans -dm org.apache.mahout.common.distance.CosineDistanceMeasure -cd 0.1 -x 10 -k 20 -ow -cl
+
+
+5. Dump the cluster result to files
+
+$bin/mahout clusterdump -i reuters/reuters-kmeans/cluster-3-final -d reuters/reuters-out-seqdir-sparse-kmeans/dictionary.file-0 -dt sequencefile -o reuters/reuters-kmeans-dump -n 5 -b 100
+
+
+6. Show the result
+For cluster points:
+$bin/mahout seqdumper -i reuters/reuters-kmeans/clusteredPoints -b 100
+
+For clusters:
+$vim reuters/reuters-kmeans-dump
+
+Hope it helps!
+Yongchen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

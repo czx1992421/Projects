@@ -1,0 +1,106 @@
+This is the instruction for Pig.
+
+Ruichi Yu
+
+Technically, you can install pig and run all samples in both local and map reduce mode. The only thing you need to be careful is the path/directory. The following samples are based on my own path and directory, please change them into yours before running them.
+
+A. Installation of Pig:
+https://pig.apache.org/docs/r0.7.0/setup.html
+Download pig and run following sentence:
+
+export PATH=/<my-path-to-pig>/pig-n.n.n/bin:$PATH
+
+
+B. Pig demo:
+Preprocessing:
+
+Set up path and java_home
+export PATH=/Users/Rich/Documents/Courses/Fall2014/BigData/Pig/pig-0.13.0/bin:$PATH
+
+export JAVA_HOME=/Library/Java/Home
+
+
+1. Run hadoop:
+
+ssh localhost
+
+cd /usr/local/Cellar/hadoop/2.7.1
+
+2. If you have removed all hadoop cache, please remember run this command first:
+bin/hdfs namenode -format
+
+3. Start hadoop and yarn:
+sbin/start-dfs.sh
+sbin/start-yarn.sh
+
+4. Upload files to HDFS
+bin/hdfs dfs -mkdir /PigSource
+
+PigSource is the directory you store Pig source file
+
+You can check whether it works by:
+bin/hdfs dfs -ls / 
+
+Now, you can upload your pig source file and data file:
+bin/hdfs dfs -put /Users/Rich/Documents/Courses/Spring2014/CloudComputing/HW/MINI5/movies_data.csv /PigSource
+
+if you would like to remove it:
+
+bin/hdfs dfs -rm /PigSource/movies_data.csv
+
+If you would like to check whether files have already been uploaded:
+
+bin/hdfs dfs -ls /PigSource 
+
+5. Run your pig code in local mode
+
+pig -x local
+
+movies = LOAD '/Users/Rich/Documents/Courses/Fall2014/BigData/Pig/movies_data.csv' USING PigStorage(',') as (id,name,year,rating,duration);
+
+DUMP movies
+
+(1). List the movies that were released between 1950 and 1960 
+movies_1950_1960 = FILTER movies BY (float)year>1949 and (float)year<1961;
+store movies_1950_1960 into '/Users/Rich/Desktop/Demo/movies_1950_1960'; 
+
+(2). List the movies that have a duration of greater than 2 hours 
+movies_two_hours = FILTER movies BY (float)duration>7200;
+store movies_two_hours into '/Users/Rich/Desktop/Demo/movies_two_hours'; 
+
+(3). List the movies that have ratings between 3 and 4 
+movies_rating_3_4 = FILTER movies BY (float)rating>3 and (float) rating <4;
+store movies_rating_3_4 into '/Users/Rich/Desktop/Demo/movies_rating_3_4'; 
+
+(4). List movie names and year 
+movies_year = foreach movies generate name, year;
+store movies_year into '/Users/Rich/Desktop/Demo/movies_year'; 
+
+(float)duration/3600
+
+(5). List all movies in descending order of year 
+movies_year_sort =order movies by year desc;
+store movies_year_sort into '/Users/Rich/Desktop/Demo/movies_year_sort'; 
+
+
+
+6. Run your pig code in map reduce mode:
+
+You have two ways to run:
+
+I. Run pig command in grunt:
+
+pig
+
+movies = LOAD '/PigSource/movies_data.csv' USING PigStorage(',') as (id,name,year,rating,duration);
+
+DUMP movies
+
+II. Run .pig file in map reduce mode using files on HDFS
+
+pig /Users/Rich/Documents/Courses/Fall2014/BigData/Pig/run1.pig
+
+
+
+
+
